@@ -73,8 +73,8 @@ def initialize():
     changePieces()
     data.playerOne = player.player(data.player1turn, p1Pieces, [], [], "p1")
     data.playerTwo = player.player(data.player2turn, p2Pieces, [], [], "p2")
-    initializePieces(data.playerOne)
-    initializePieces(data.playerTwo)
+    s.initializePieces(data.playerOne)
+    s.initializePieces(data.playerTwo)
     s.getKings()
     data.startScreen = False
     data.custom = False
