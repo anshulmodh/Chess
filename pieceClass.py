@@ -14,6 +14,7 @@ class pieces(object):
         self.col = col
         self.player = player
         self.resize = resize
+        self.screen = data.screen
 
     def copy(self): # make a copy of itself
         return pieces(self.name, self.x, self.y, self.row, self.col, self.player, self.image, self.moved)
@@ -67,9 +68,9 @@ class pieces(object):
         self.row = Nrow
         self.col = Ncol
         
-    def draw(self, screen):
+    def draw(self):
         image = self.image
         imageRect = image.get_rect(center = (data.startX0 + self.x, self.y))
-        screen.blit(image, imageRect)
+        self.screen.blit(image, imageRect)
 
     def getAllMoves(self): pass

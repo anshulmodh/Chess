@@ -75,16 +75,19 @@ def drawNew(newrow, newcol, x, y): # draw new piece in current state
                     checkAttack(newrow, newcol, piece)
                     #resizeImages(data, data.p1dead)
                     #resizeImages(data, data.p2dead)
-                    piece.move(x, y, newrow, newcol)
-                    data.board[newrow][newcol] = piece
-                    data.board[data.drow][data.dcol] = None
                     #checkPromotion()
                     if checkKing(data.board):
                         drawNewFromCheck(piece, oldRow, oldCol, newrow, newcol)
                     else:
+                        print(3333333333333)
                         data.click1 = False
                         data.player2turn, data.player1turn = not data.player2turn, not data.player1turn
                         data.moved = True
+                    print(44444444444444)
+                    piece.move(x, y, newrow, newcol)
+                    data.board[newrow][newcol] = piece
+                    data.board[data.drow][data.dcol] = None
+                    piece.draw()
                 else:
                     data.click1 = False
                     x, y = s.getXY((data.drow, data.dcol))

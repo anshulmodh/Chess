@@ -162,6 +162,9 @@ def resetColors():
     data.tanB4 = 240, 218, 181
     data.tan1 = 220, 198, 161
     data.tan2 = 220, 198, 161
+    data.tan3 = 220, 198, 161
+    data.tan4 = 220, 198, 161
+    data.tan5 = 220, 198, 161
 
 def timers():
     if data.timer1:

@@ -5,10 +5,12 @@ import player
 import data
 
 def resetAll():
+    data.dir = os.getcwd() + "/Pictures"
     data.rows = 8
     data.cols = 8
     cols, rows = data.cols, data.rows
-    data.font = "Helvetica 0"
+    data.customFontSize = 0
+    data.font = pygame.font.SysFont("impact", data.customFontSize)
     data.moved = False
     data.drawCPU = False
     data.gameover = False
@@ -16,6 +18,10 @@ def resetAll():
     data.tan2 = 220, 198, 161
     data.x = 0
     data.y = 0
+    data.startScreen = False
+    data.tan3 = 220, 198, 161
+    data.tan4 = 220, 198, 161
+    data.tan5 = 220, 198, 161
     data.tran = True
     data.margin = 90
     data.player1turn = True
@@ -27,15 +33,15 @@ def resetAll():
     data.brown1 = 181, 135, 99
     data.xOne = 100
     data.yOne = 600
-    data.xTwo = 150
+    data.xTwo = 300
     data.yTwo = 650
     data.b1 = 850
-    black = 0, 0, 0
-    white = 255, 255, 255
-    green = 124, 252, 0
-    gray = 130, 130, 230
-    tan = 240, 218, 181
-    brown = 181, 135, 99
+    data.black = 0, 0, 0
+    data.white = 255, 255, 255
+    data.green = 124, 252, 0
+    data.gray = 130, 130, 230
+    data.tan = 240, 218, 181
+    data.brown = 181, 135, 99
     data.b2 = 900
     data.b3 = 950
     data.b4 = 1000
@@ -86,15 +92,15 @@ def resetAll():
     data.x0 = data.width / 2
     data.x1 = data.width / 2
     data.y0 = data.height / 2
-    data.usedplaces = []
-    data.xOne = -100
     data.y1 = data.height / 2
+    data.x2 = data.width / 2
+    data.y2 = data.height / 2
+    data.usedplaces = []
     data.customAnim = False
     data.makeCustomScreen = False
     data.fontNum = 0
     data.timertime1 = ""
     data.timertime2 = ""
-    data.counter = 0
     data.player2Attack = False
     data.error = False
     data.piecedraw = []
@@ -105,23 +111,26 @@ def resetAll():
     data.customcellHeight = 0
     data.custompieces = {}
     data.depth = 3
-    data.backHelp = pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/wood/backHelp.jpg"))
-    data.startWood = pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/wood/startWood.png"))
-    data.woodDark = pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/wood/woodDark.png"))
-    data.woodLight = pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/wood/woodLight.jpg"))
-    data.backWood = pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/wood/backWood.jpg"))
-    data.Wpawn = pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/WPawn.png"))
-    data.Bpawn =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/BPawn.png"))
-    data.Wbishop =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/WBishop.png"))
-    data.Bbishop =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/BBishop.png"))
-    data.Bknight =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/BKnight.png"))
-    data.Wknight =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/WKnight.png"))
-    data.Brook =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/BRook.png"))
-    data.Wrook =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/WRook.png"))
-    data.Bking =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/BKing.png"))
-    data.Wking =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/WKing.png"))
-    data.Bqueen =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/BQueen.png"))
-    data.Wqueen =  pygame.image.load(os.path.join("C:/Users/Anshul Modh/Desktop/cmu/15-112 Files/Finished/Pictures/pieces/WQueen.png"))
+    data.backHelp = pygame.image.load(os.path.join(data.dir + "/wood/backHelp.jpg"))
+    data.startWood = pygame.image.load(os.path.join(data.dir + "/wood/startWood.png"))
+    data.woodDark = pygame.image.load(os.path.join(data.dir + "/wood/woodDark.png"))
+    data.woodLight = pygame.image.load(os.path.join(data.dir + "/wood/woodLight.jpg"))
+    data.backWood = pygame.image.load(os.path.join(data.dir + "/wood/backWood.jpg"))
+    data.Wpawn = pygame.image.load(os.path.join(data.dir + "/pieces/WPawn.png"))
+    data.Bpawn =  pygame.image.load(os.path.join(data.dir + "/pieces/BPawn.png"))
+    data.Wbishop =  pygame.image.load(os.path.join(data.dir + "/pieces/WBishop.png"))
+    data.Bbishop =  pygame.image.load(os.path.join(data.dir + "/pieces/BBishop.png"))
+    data.Bknight =  pygame.image.load(os.path.join(data.dir + "/pieces/BKnight.png"))
+    data.Wknight =  pygame.image.load(os.path.join(data.dir + "/pieces/WKnight.png"))
+    data.Brook =  pygame.image.load(os.path.join(data.dir + "/pieces/BRook.png"))
+    data.Wrook =  pygame.image.load(os.path.join(data.dir + "/pieces/WRook.png"))
+    data.Bking =  pygame.image.load(os.path.join(data.dir + "/pieces/BKing.png"))
+    data.Wking =  pygame.image.load(os.path.join(data.dir + "/pieces/WKing.png"))
+    data.Bqueen =  pygame.image.load(os.path.join(data.dir + "/pieces/BQueen.png"))
+    data.Wqueen =  pygame.image.load(os.path.join(data.dir + "/pieces/WQueen.png"))
+    data.customWood = data.backHelp.copy()
+    data.customWoodCur = data.customWood
+    data.customSize = 1
     data.startField = False
     data.piecenames = [[["pawn", "p1"], ["rook", "p1"], ["bishop", "p1"], ["knight", "p1"], ["king", "p1"], ["queen", "p1"]], \
                        [["pawn", "p2"], ["rook", "p2"], ["bishop", "p2"], ["knight", "p2"], ["king", "p2"], ["queen", "p2"]]]
@@ -176,3 +185,4 @@ def resetAll():
     data.playerOne = player.player(data.player1turn, {}, [], [], "p1")
     data.playerTwo = player.player(data.player2turn, {}, [], [], "p2")
     data.pause = False
+    s.getKings()

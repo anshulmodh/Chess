@@ -10,24 +10,56 @@ tan = 240, 218, 181
 brown = 181, 135, 99
 
 def redrawAll(screen): # control all canvas draw functions
-           # if data.custom or data.customAnim:
-        #     drawCustomScreen(canvas, data)\
-    drawGame(screen)
+    drawGame(screen) 
     if data.moveAnim:
-        moveAnimation(screen)
-    if data.check and data.counter % 10 == 0:
-        check(screen, "CHECK", 175, 650)
+        moveAnimation()
+    if data.check:
+        check(screen, "CHECK", 350, 650)
     if not data.startScreen and gl.checkmate(data.board) and not data.gameover:
         check(screen, "CHECKMATE!", 350, 650)
     if data.p1promote or data.p2promote:
         check(screen, "Pawn Promotion!", 525, 650)
-    drawPlayer(screen)
+    if not data.cpu:
+        drawPlayer(screen)
     if data.gameover:
         gameover(screen)
     if data.pause or data.pauseAnim:
         pauseScreen(screen)
     if not data.startScreen and not data.pause and data.tran and data.startX0 <= 0 and not data.pauseAnim:
         drawTrans(screen)
+
+def moveAnimation():
+    if data.moveAnim and data.drawingpiece != None:
+        piece = data.drawingpiece
+        x = data.piecex
+        y = data.piecey
+        piece.move(x, y, data.end[0], data.end[1])
+        data.piecex += data.xdis
+        data.piecey += data.ydis
+        xorg = data.orgpiecex
+        yorg = data.orgpiecey
+        if xorg >= data.CPUXY[0] and yorg >= data.CPUXY[1]:
+            if data.piecex <= data.CPUXY[0] and data.piecey <= data.CPUXY[1]:
+                piece.move(data.CPUXY[0], data.CPUXY[1], data.end[0], data.end[1])
+                data.moveAnim = False
+        elif xorg >= data.CPUXY[0] and yorg <= data.CPUXY[1]:
+            if data.piecex <= data.CPUXY[0] and data.piecey >= data.CPUXY[1]:
+                piece.move(data.CPUXY[0], data.CPUXY[1], data.end[0], data.end[1])
+                data.moveAnim = False
+        elif xorg <= data.CPUXY[0] and yorg >= data.CPUXY[1]:
+            if data.piecex >= data.CPUXY[0] and data.piecey <= data.CPUXY[1]:
+                piece.move(data.CPUXY[0], data.CPUXY[1], data.end[0], data.end[1])
+                data.moveAnim = False
+        elif xorg <= data.CPUXY[0] and yorg <= data.CPUXY[1]:
+            if data.piecex >= data.CPUXY[0] and data.piecey >= data.CPUXY[1]:
+                piece.move(data.CPUXY[0], data.CPUXY[1], data.end[0], data.end[1])
+                data.moveAnim = False
+
+def setScreen(screen):
+    for elem in data.playerOne.p:
+        elem.screen = screen
+    for elem in data.playerTwo.p:
+        elem.screen = screen
 
 def startingScreen(screen):
     screen.fill(white)
@@ -151,8 +183,12 @@ def drawGame(screen): # draw game cells
             screen.blit(fill, [x0, y0])
         drawPieces(screen)
     font = pygame.font.SysFont("impact", 13)
-    text1 = font.render("Player 2 dead pieces:", True, white)
-    text2 = font.render("Player 1 dead pieces:", True, white)
+    if not data.cpu:
+        text1 = font.render("Player 2 dead pieces:", True, white)
+        text2 = font.render("Player 1 dead pieces:", True, white)
+    else:
+        text1 = font.render("Player's dead pieces:", True, white)
+        text2 = font.render("CPU dead pieces:", True, white)
     textRect = text1.get_rect(center = (data.startX0 + 80, 50))
     screen.blit(text1, textRect)
     textRect = text2.get_rect(center = (data.startX0 + 620, 50))
@@ -188,7 +224,7 @@ def gameover(screen):
 
 def drawPieces(screen): # draw all pieces
     for elem in data.pieces:
-        elem.draw(screen)
+        elem.draw()
     mid = (data.margin  + 20)/ 2
     for i in range(len(data.playerTwo.dead)):
         data.playerTwo.dead[i].move(mid, data.margin + (i * mid), None, None)
@@ -227,6 +263,27 @@ def pauseScreen(screen): # pull out the pause screen
         screen.blit(text, textRect)
         text = data.Pfont1.render("Back to Game", True, white)
         textRect = text.get_rect(center = (data.textX, data.textY + data.margin1))
+        screen.blit(text, textRect)
+    else:
+        pygame.draw.rect(screen, data.tan1, [data.pauserect3, data.pauserect4, data.pauseW1, data.pauseH1])
+        pygame.draw.rect(screen, data.tan2, [data.pauserect3, data.pauserect4 + data.margin1, data.pauseW1, data.pauseH1])
+        text = data.Pfont1.render("Back to Main Menu", True, white)
+        textRect = text.get_rect(center = (data.textX, data.textY))
+        screen.blit(text, textRect)
+        text = data.Pfont1.render("Back to Game", True, white)
+        textRect = text.get_rect(center = (data.textX, data.textY + data.margin1))
+        screen.blit(text, textRect)
+        pygame.draw.rect(screen, data.tan3, [data.pauserect3, data.pauserect4 + data.margin1*2, data.pauseW1/4, data.pauseH1])
+        pygame.draw.rect(screen, data.tan4, [data.pauserect3 + (data.pauseW1*3)/8, data.pauserect4 + data.margin1*2, data.pauseW1/4, data.pauseH1])
+        pygame.draw.rect(screen, data.tan5, [data.pauserect3 + (data.pauseW1*3)/4, data.pauserect4 + data.margin1*2, data.pauseW1/4, data.pauseH1])
+        text = data.Pfont1.render("Easy", True, white)
+        textRect = text.get_rect(center = (data.textX - data.margin1*2, data.textY + data.margin1*2))
+        screen.blit(text, textRect)
+        text = data.Pfont1.render("Medium", True, white)
+        textRect = text.get_rect(center = (data.textX, data.textY + data.margin1*2))
+        screen.blit(text, textRect)
+        text = data.Pfont1.render("Hard", True, white)
+        textRect = text.get_rect(center = (data.textX + data.margin1*2, data.textY + data.margin1*2))
         screen.blit(text, textRect)
     #screen.blit(data.dark, (data.startX0, 0))
     # canvas.create_reccolor.tangle(data.pauserect1, 200, data.pauserect1 + 400, 500, fill = "yellow", width = 3, outline = "color.green")
@@ -303,3 +360,118 @@ def check(screen, text, x, y): # display check text if in check
     screen.blit(text, textRect)
     
 # xtRect[1] - 5, textRect[2] + 20, textRect[3] + 10])
+
+def defineRect(x0, y0, x1, y1):
+    obj = pygame.Rect(x0, y0, x1 - x0, y1 - y0)
+    return obj
+
+def redefinePics(xSize, ySize):
+    data.woodLightCustom = pygame.transform.scale(data.woodLight.copy(), (xSize, ySize))
+    data.woodDarkCustom = pygame.transform.scale(data.woodDark.copy(), (xSize, ySize))
+
+def drawCustomScreen(screen):
+    data.font = pygame.font.SysFont("impact", data.customFontSize)
+    data.customWoodCur = pygame.transform.scale(data.customWood, (data.customSize, data.customSize))
+    screen.blit(data.customWoodCur, (data.x0, data.y0))
+    text = data.font.render("Welcome to Custom Mode!", True, white)
+    textRect = text.get_rect(center = (data.x1 + (data.x2 - data.x1) / 2, data.y1 + data.margin))
+    screen.blit(text, textRect)
+    if not data.customAnim:
+        pygame.draw.rect(screen, data.brown, defineRect(data.xOne, data.yOne, data.xTwo, data.yTwo))
+        cx = data.xTwo
+        cy = (data.yOne + (data.yTwo - data.yOne)/2)
+        radius = (int)((data.yTwo - data.yOne)/2)
+        pygame.draw.circle(screen, data.brown, ((int)(cx), (int)(cy)), (int)(radius), 0)
+        cx = data.xOne
+        cy = (data.yOne + (data.yTwo - data.yOne)/2)
+        radius = (int)((data.yTwo - data.yOne)/2)
+        pygame.draw.circle(screen, data.brown, ((int)(cx), (int)(cy)), (int)(radius), 0)
+        text = data.font.render("Back", True, white)
+        textRect = text.get_rect(center = (data.xOne + 100, data.yOne + data.margin/4))
+        screen.blit(text, textRect)
+        data.custommargin = data.margin + data.margin/2
+        width = data.width - data.custommargin* 2
+        height = data.height - data.custommargin * 2
+        data.customcellWidth = (int)(width / data.cols)
+        data.customcellHeight = (int)(height / data.rows)
+        redefinePics(data.customcellWidth, data.customcellHeight)
+        for row in range(data.rows):
+            for col in range(data.cols):
+                if (row + col)%2 == 1:
+                    fill = data.woodLightCustom
+                else:
+                    fill = data.woodDarkCustom
+                left = data.custommargin + data.customcellWidth * col
+                top = data.custommargin + data.customcellHeight * row
+                screen.blit(fill, [left, top])
+        if data.text1:
+            fill1 = data.gray
+        else: fill1 = white
+        if data.text2:
+            fill2 = data.gray
+        else: fill2 = white
+        pygame.draw.rect(screen, fill1, defineRect(101, 30, 175, 60))
+        pygame.draw.rect(screen, fill2, defineRect(275, 30, 350, 60))
+        curFont = pygame.font.SysFont("impact", 14)
+        text = curFont.render("Number of Rows:", True, white)
+        textRect = text.get_rect(center = (50, 45))
+        screen.blit(text, textRect)
+        text = curFont.render("Number of Cols:", True, white)
+        textRect = text.get_rect(center = (225, 45))
+        screen.blit(text, textRect)
+        text = curFont.render(data.text1Num, True, white)
+        textRect = text.get_rect(center = (138, 45))
+        screen.blit(text, textRect)
+        text = curFont.render(data.text2Num, True, white)
+        textRect = text.get_rect(center = (312, 45))
+        screen.blit(text, textRect)
+        pygame.draw.rect(screen, data.brown, defineRect(600, 30, 675, 60))
+        pygame.draw.circle(screen, data.brown, (675, 45), 15)
+        pygame.draw.circle(screen, data.brown, (600, 45), 15)
+        pygame.draw.rect(screen, data.brown, defineRect(600, 90, 675, 120))
+        pygame.draw.circle(screen, data.brown, (675, 105), 15)
+        pygame.draw.circle(screen, data.brown, (600, 105), 15)
+        text = curFont.render("1v1 Start", True, white)
+        textRect = text.get_rect(center = (637, 45))
+        screen.blit(text, textRect)
+        text = curFont.render("1vCPU Start", True, white)
+        textRect = text.get_rect(center = (637, 105))
+        screen.blit(text, textRect)
+#         drawMenuPieces(canvas, data)
+#         drawCustomHelp(canvas, data)
+
+# def drawCustomHelp(canvas, data):
+#     canvas.create_text(350, 130, text = "Make sure to type in the rows and columns before placing pieces!")
+#     canvas.create_text(2, 20, text = "Rows and Cols can be between 2 and 20", anchor = W)
+#     canvas.create_text(550, 200, text = """drop selected items here 
+#                 to trash""", anchor = W)
+#     canvas.create_text(550, 555, text = "Drag and drop pieces from here")
+#     canvas.create_text(610, 20, text = "Don't forget to place 2 kings!")
+
+# def drawMenuPieces(canvas, data):
+#     cellDim = 50
+#     xmargin = 300
+#     ymargin = 575
+#     if data.rows + data.cols < 25:
+#         files = data.row0
+#         files1 = data.row1
+#     else:
+#         files = data.row0Size
+#         files1 = data.row1Size
+#     for row in range(2):
+#         for col in range(6):
+#             left = xmargin + cellDim * col
+#             top = ymargin + cellDim * row
+#             right = left + cellDim
+#             bottom = top + cellDim
+#             canvas.create_rectangle(left, top, right, bottom, fill = "white")
+#             if row == 0:
+#                 file = files[col]
+#                 canvas.create_image(left + cellDim/2, top + cellDim/2, image = file)
+#             else:
+#                 file = files1[col]
+#                 canvas.create_image(left + cellDim/2, top + cellDim/2, image = file)
+#     if data.customclick1:
+#         canvas.create_image(data.drawpiecex, data.drawpiecey, image = data.currentdrawingpiece)
+#     for piece in data.custompieces:
+#         canvas.create_image(data.custompieces[piece][0], data.custompieces[piece][1], image = piece)
