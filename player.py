@@ -1,3 +1,4 @@
+import support as s
 import data
 
 class player(object):
@@ -28,6 +29,7 @@ class player(object):
 			return pawn, bishop, knight, rook, queen, king
 
 	def getPlayerData(self):
+		s.getKings()
 		if str(self.player) == "p1":
 			piece = data.p1King
 		else:

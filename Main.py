@@ -5,11 +5,13 @@ import event
 import graphics as g
 import support as s
 import reset
+import cpu as cpu
 
 def run():
     screen = data.screen
     data.dark = pygame.Surface(data.backWood.get_size()).convert_alpha()
     data.dark.fill((0, 0, 0, data.darken_percent*255))
+    initPics()
     while True:
         if data.reset:
             data.reset = False
@@ -26,14 +28,47 @@ def run():
             pauseAnim()
         if data.pauseAnim:
             pauseAnimVals()
+        if data.custom or data.customAnim:
+            g.drawCustomScreen(screen)
+            data.startScreen = False
+            if (data.customSize < 700):
+                    data.customSize += 10
+                    data.x0 -= 5
+                    data.y0 -= 5
+            if data.customFontSize < 30:
+                data.customFontSize +=1
+            if not (0 >= data.x1 and data.x2 >= data.width and data.y1 <= 0 and data.y2 >= data.height):
+                data.x1 -= 5
+                data.x2 += 5
+                data.y1 -= 5
+                data.y2 += 5
+            else:
+                data.customAnim = False
+            # if data.custom and not data.customAnim:
+            #     if not (0 >= data.x0 and data.x1 >= data.width and data.y0 <= 0 and data.y1 >= data.height):
+            #         data.x0 -= 15
+            #         data.x1 += 15
+            #         data.y0 -= 15
+            #         data.y1 += 15
+            #         if data.fontNum < 30:
+            #             data.fontNum += 1
+            #         data.font = "Helvetica " + str(data.fontNum)
+            #     else:
+            #         data.makeCustomScreen = True
         if not data.pause and not data.pauseAnim:
             data.Pfont1Size = data.margin1 = data.pauserect1 = data.pauserect2 = data.pauseW = data.pauseH = data.Pfont = data.alpha = data.pauserect3 = data.pauserect4 = data.pauseW1 = data.pauseH1 = 0
-        if not data.startScreen and not data.pause:
+        if not data.startScreen and not data.pause and not data.makeCustomScreen:
+            if (data.startScreen):
+                g.setScreen(screen)
             s.getKings()
             data.playerOne.setPlayer = data.player1turn
             data.playerTwo.setPlayer = data.player2turn
-            if not data.cpu:
-                s.incTimers()
+            s.incTimers()
+            if data.player1turn and data.cpu:
+                g.drawPieces(screen)
+                cpu.cpu(data.board)
+                data.player2turn = True
+                data.player1turn = False
             if gameLogic.checkKing(data.board):
                 data.check = True
             if data.check:
@@ -47,7 +82,8 @@ def run():
                 pieces2 = data.playerTwo.dead
             if gameLogic.checkP(pieces2):
                 gameLogic.checkPromotion()
-            g.redrawAll(screen)
+            if not data.makeCustomScreen:
+                g.redrawAll(screen)
         data.fps.tick(100)
         pygame.display.flip()
         event.onEvent(screen)
@@ -96,7 +132,7 @@ def pauseAnim():
     if data.Pfont < 40:
         data.Pfont += 5
         data.pauseFont = pygame.font.SysFont("impact", int(data.Pfont))
-    if data.Pfont1Size < 15:
+    if data.Pfont1Size < 13:
         data.Pfont1Size += 3
         data.Pfont1 = pygame.font.SysFont("impact", int(data.Pfont))
     if data.alpha < 128:
@@ -109,7 +145,7 @@ def pauseAnim():
         data.pauseH1 += 5
     if data.pauseW1 < 300:
         data.pauseW1 += 25
-    if data.margin1 < 75:
+    if data.margin1 < 60:
         data.margin1 += 5
     if data.textX < 350:
         data.textX += 35
@@ -145,6 +181,37 @@ def pauseAnimVals():
         data.textX -= 35
     if data.textY > 0:
         data.textY -= 30
+
+def initPics():
+    data.WpawnSize = pygame.transform.scale(data.Wpawn, (30, 30))
+    data.BpawnSize =  pygame.transform.scale(data.Bpawn, (30, 30))
+    data.WbishopSize = pygame.transform.scale(data.Wbishop, (30, 30))
+    data.BbishopSize = pygame.transform.scale(data.Bbishop, (30, 30))
+    data.BknightSize = pygame.transform.scale(data.Bknight, (30, 30))
+    data.WknightSize = pygame.transform.scale(data.Wknight, (30, 30))
+    data.BrookSize = pygame.transform.scale(data.Brook, (30, 30))
+    data.WrookSize = pygame.transform.scale(data.Wrook, (30, 30))
+    data.BkingSize = pygame.transform.scale(data.Bking, (30, 30))
+    data.WkingSize = pygame.transform.scale(data.Wking, (30, 30))
+    data.BqueenSize = pygame.transform.scale(data.Bqueen, (30, 30))
+    data.WqueenSize = pygame.transform.scale(data.Wqueen, (30, 30))
+    data.WpawnSSize = pygame.transform.scale(data.Wpawn, (15, 15))
+    data.BpawnSSize =  pygame.transform.scale(data.Bpawn, (15, 15))
+    data.WbishopSSize = pygame.transform.scale(data.Wbishop, (15, 15))
+    data.BbishopSSize = pygame.transform.scale(data.Bbishop, (15, 15))
+    data.startField = False
+    data.BknightSSize = pygame.transform.scale(data.Bknight, (15, 15))
+    data.WknightSSize = pygame.transform.scale(data.Wknight, (15, 15))
+    data.BrookSSize = pygame.transform.scale(data.Brook, (15, 15))
+    data.WrookSSize = pygame.transform.scale(data.Wrook, (15, 15))
+    data.BkingSSize = pygame.transform.scale(data.Bking, (15, 15))
+    data.WkingSSize = pygame.transform.scale(data.Wking, (15, 15))
+    data.BqueenSSize = pygame.transform.scale(data.Bqueen, (15, 15))
+    data.WqueenSSize = pygame.transform.scale(data.Wqueen, (15, 15))
+    data.row0 = [data.WpawnSize, data.WrookSize, data.WbishopSize, data.WknightSize, data.WkingSize, data.WqueenSize]
+    data.row1 = [data.BpawnSize, data.BrookSize, data.BbishopSize, data.BknightSize, data.BkingSize, data.BqueenSize]
+    data.row0Size = [data.WpawnSSize, data.WrookSSize, data.WbishopSSize, data.WknightSSize, data.WkingSSize, data.WqueenSSize]
+    data.row1Size = [data.BpawnSSize, data.BrookSSize, data.BbishopSSize, data.BknightSSize, data.BkingSSize, data.BqueenSSize]
 
 run()
 
