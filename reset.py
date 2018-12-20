@@ -33,7 +33,7 @@ def resetAll():
     data.brown1 = 181, 135, 99
     data.xOne = 100
     data.yOne = 600
-    data.xTwo = 300
+    data.xTwo = 200
     data.yTwo = 650
     data.b1 = 850
     data.black = 0, 0, 0
@@ -46,8 +46,8 @@ def resetAll():
     data.b3 = 950
     data.b4 = 1000
     data.text1 = False
-    data.text1Num = ""
-    data.text2Num = ""
+    data.text1Num = "8"
+    data.text2Num = "8"
     data.text2 = False
     data.cheat = False
     data.drawingpiece = None
@@ -185,4 +185,6 @@ def resetAll():
     data.playerOne = player.player(data.player1turn, {}, [], [], "p1")
     data.playerTwo = player.player(data.player2turn, {}, [], [], "p2")
     data.pause = False
+    data.p1Pieces = {}
+    data.p2Pieces = {}
     s.getKings()

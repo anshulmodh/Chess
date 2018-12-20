@@ -387,7 +387,7 @@ def drawCustomScreen(screen):
         radius = (int)((data.yTwo - data.yOne)/2)
         pygame.draw.circle(screen, data.brown, ((int)(cx), (int)(cy)), (int)(radius), 0)
         text = data.font.render("Back", True, white)
-        textRect = text.get_rect(center = (data.xOne + 100, data.yOne + data.margin/4))
+        textRect = text.get_rect(center = (data.xOne + 50, data.yOne + data.margin/4))
         screen.blit(text, textRect)
         data.custommargin = data.margin + data.margin/2
         width = data.width - data.custommargin* 2
@@ -419,10 +419,10 @@ def drawCustomScreen(screen):
         text = curFont.render("Number of Cols:", True, white)
         textRect = text.get_rect(center = (225, 45))
         screen.blit(text, textRect)
-        text = curFont.render(data.text1Num, True, white)
+        text = curFont.render(data.text1Num, True, black)
         textRect = text.get_rect(center = (138, 45))
         screen.blit(text, textRect)
-        text = curFont.render(data.text2Num, True, white)
+        text = curFont.render(data.text2Num, True, black)
         textRect = text.get_rect(center = (312, 45))
         screen.blit(text, textRect)
         pygame.draw.rect(screen, data.brown, defineRect(600, 30, 675, 60))
@@ -437,10 +437,28 @@ def drawCustomScreen(screen):
         text = curFont.render("1vCPU Start", True, white)
         textRect = text.get_rect(center = (637, 105))
         screen.blit(text, textRect)
-#         drawMenuPieces(canvas, data)
-#         drawCustomHelp(canvas, data)
+        drawMenuPieces(screen)
+        drawCustomHelp(screen)
+        pygame.draw.rect(screen, black, defineRect(565, 135, 700, 560), 1)
 
-# def drawCustomHelp(canvas, data):
+def drawCustomHelp(screen):
+    curFont = pygame.font.SysFont("impact", 10)
+    text = curFont.render("Make sure to type in the rows and columns before placing pieces!", True, black)
+    textRect = text.get_rect(center = (350, 125))
+    screen.blit(text, textRect)
+    text = curFont.render("Rows and Cols must be between 3 and 20", True, black)
+    textRect = text.get_rect(center = (85, 20))
+    screen.blit(text, textRect)
+    text = curFont.render("Drag and drop pieces from here", True, black)
+    textRect = text.get_rect(center = (500, 570))
+    screen.blit(text, textRect)
+    text = curFont.render("Don't forget to place 2 kings!", True, black)
+    textRect = text.get_rect(center = (640, 15))
+    screen.blit(text, textRect)
+    curFont = pygame.font.SysFont("impact", 10)
+    text = curFont.render("drag and drop here to trash", True, black)
+    textRect = text.get_rect(center = (630, 150))
+    screen.blit(text, textRect)
 #     canvas.create_text(350, 130, text = "Make sure to type in the rows and columns before placing pieces!")
 #     canvas.create_text(2, 20, text = "Rows and Cols can be between 2 and 20", anchor = W)
 #     canvas.create_text(550, 200, text = """drop selected items here 
@@ -448,30 +466,38 @@ def drawCustomScreen(screen):
 #     canvas.create_text(550, 555, text = "Drag and drop pieces from here")
 #     canvas.create_text(610, 20, text = "Don't forget to place 2 kings!")
 
-# def drawMenuPieces(canvas, data):
-#     cellDim = 50
-#     xmargin = 300
-#     ymargin = 575
-#     if data.rows + data.cols < 25:
-#         files = data.row0
-#         files1 = data.row1
-#     else:
-#         files = data.row0Size
-#         files1 = data.row1Size
-#     for row in range(2):
-#         for col in range(6):
-#             left = xmargin + cellDim * col
-#             top = ymargin + cellDim * row
-#             right = left + cellDim
-#             bottom = top + cellDim
-#             canvas.create_rectangle(left, top, right, bottom, fill = "white")
-#             if row == 0:
-#                 file = files[col]
-#                 canvas.create_image(left + cellDim/2, top + cellDim/2, image = file)
-#             else:
-#                 file = files1[col]
-#                 canvas.create_image(left + cellDim/2, top + cellDim/2, image = file)
-#     if data.customclick1:
+def drawMenuPieces(screen):
+    cellDim = 60
+    xmargin = 300
+    ymargin = 575
+    if data.rows + data.cols < 25:
+        margin = 15
+        # files = data.row0
+        # files1 = data.row1
+    else:
+        margin = 7
+        # files = data.row0Size
+        # files1 = data.row1Size
+    files = data.row0Orig
+    files1 = data.row1Orig
+    for row in range(2):
+        for col in range(6):
+            left = xmargin + cellDim * col
+            top = ymargin + cellDim * row
+            right = left + cellDim
+            bottom = top + cellDim
+            pygame.draw.rect(screen, black, defineRect(left, top, right, bottom), 1)
+            if row == 0:
+                file = files[col]
+                #canvas.create_image(left + cellDim/2, top + cellDim/2, image = file)
+            else:
+                file = files1[col]
+                #canvas.create_image(left + cellDim/2, top + cellDim/2, image = file)
+            screen.blit(file, (left, top))
+    if data.customclick1:
+        screen.blit(data.currentdrawingpiece, (data.drawpiecex - margin, data.drawpiecey - margin))
 #         canvas.create_image(data.drawpiecex, data.drawpiecey, image = data.currentdrawingpiece)
-#     for piece in data.custompieces:
+    for piece in data.custompieces:
+        stuff = data.custompieces[piece]
+        screen.blit(piece, (stuff[0] - margin, stuff[1] - margin))
 #         canvas.create_image(data.custompieces[piece][0], data.custompieces[piece][1], image = piece)
