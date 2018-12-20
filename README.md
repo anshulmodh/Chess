@@ -24,7 +24,7 @@ $ pip install pygame
 
 # AI Features
 1. MiniMax Algorithm
-2. Alpa-Beta Pruning
+2. Alpha-Beta Pruning
 3. Heuristic Evaluation(In-Development)
 4. 3 difficulty levels -> Easy - predicts up to 3 moves ahead, Medium - 7 moves, Hard - 15 moves
 
