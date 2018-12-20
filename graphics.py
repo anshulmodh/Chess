@@ -97,7 +97,7 @@ def drawStart(screen): # draw start screen
     pygame.draw.ellipse(screen, data.tanB2, [data.b2 - r, 425 - r, r*2, r*2])
     pygame.draw.ellipse(screen, data.tanB2, [data.b2 + 200 - r, 425 - r, r*2, r*2])
     pygame.draw.rect(screen, data.tanB2, [data.b2, 400, 200, 50])
-    text = font.render("1-Player v CPU", True, black)
+    text = font.render("Play with AI", True, black)
     textRect = text.get_rect(center = (data.b1 + 100, 425))
     screen.blit(text, textRect)
     pygame.draw.ellipse(screen, data.tanB3, [data.b3 - r, 525 - r, r*2, r*2])
