@@ -7,7 +7,7 @@ import support as s
 import reset
 import cpu as cpu
 
-def run():
+def run():  #Needs to be cleaned up
     screen = data.screen
     data.dark = pygame.Surface(data.backWood.get_size()).convert_alpha()
     data.dark.fill((0, 0, 0, data.darken_percent*255))
