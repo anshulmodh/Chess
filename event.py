@@ -94,6 +94,7 @@ def initial():
     width = data.width - data.margin*2
     data.cellWidth = width/data.cols
     data.cellHeight = height/data.rows
+    s.resize(data.cellWidth, data.cellHeight)
 
 def getPieceCell(x, y):
     colNum = None

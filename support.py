@@ -2,6 +2,7 @@ import data
 import time
 import pieceClass
 import gameLogic
+import pygame
 
 def offsetTimers():
     timePassed = time.time() - data.offset
@@ -57,6 +58,12 @@ def printBoard(board): # print board in a readable way
             if piece != None:
                 newboard[row][col] = piece.getName()
     return newboard
+
+def resize(cellWidth, cellHeight):
+    cellWidth = int(cellWidth)
+    cellHeight = int(cellHeight)
+    data.woodDark = pygame.transform.scale(data.woodDark, (cellWidth, cellHeight))
+    data.woodLight = pygame.transform.scale(data.woodLight, (cellWidth, cellHeight))
 
 def getRowCol(elem, row, col, i): # get row, col info
     drow, dcol = 0, 0
