@@ -250,7 +250,7 @@ def getHeuristic(board, pieces, state, otherPieces, length): # get the heuristic
         return 0 - score
 
 def moveCPU(move, pieces):
-    print(s.printBoard(move))
+    #print(s.printBoard(move))
     for row in range(data.rows):
         for col in range(data.cols):
             piece = move[row][col]

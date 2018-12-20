@@ -10,6 +10,7 @@ import reset
 def onEvent(screen):
     x, y = pygame.mouse.get_pos()
     cursorMotion(screen)
+    mouseMotion()
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -29,10 +30,10 @@ def onEvent(screen):
                 eventCustom(x, y)
             if data.pause:
                 paused(event)
-            if data.custom:
+            if data.custom and not data.startScreen:
                 customPress()
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_p:
+            if event.key == pygame.K_p and not data.startScreen and not data.makeCustomScreen:
                 if data.pause:
                     s.offsetTimers()
                     data.pauseAnim = True
@@ -45,48 +46,65 @@ def onEvent(screen):
                 data.pause = False
             if data.text1 or data.text2:
                 if data.text1:
-                    if event.keysym == "BackSpace":
+                    if event.key == pygame.K_BACKSPACE:
                         data.text1Num = data.text1Num[:-1]
-                    elif event.keysym in "0123456789":
-                        data.text1Num = data.text1Num + event.keysym
+                    elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
+                        data.text1Num = data.text1Num + chr(event.key)
                 elif data.text2:
-                    if event.keysym == "BackSpace":
+                    if event.key == pygame.K_BACKSPACE:
                         data.text2Num = data.text2Num[:-1]
-                    elif event.keysym in "0123456789":
-                        data.text2Num = data.text2Num + event.keysym
+                    elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
+                        data.text2Num = data.text2Num + chr(event.key)
 
 def initial():
     data.makeCustomScreen =False
     data.custom = False
     data.customAnim = False
+    #print("no1")
     data.player2turn = True
     data.player1turn = False
     data.startScreen = False
     data.addScreen = True
-    p2Pieces = {"pawn": [(6, 0), (6, 1), (6, 2), (6, 3), (6, 4), (6, 5), \
-(6, 6), (6, 7)], "bishop": [(7, 2), (7, 5)], "rook": [(7, 0), (7, 7)], \
-"queen": [(7, 4)], "king": [(7, 3)], "knight": [(7, 1), (7, 6)]}
-    p1Pieces = {"pawn": [(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), \
-(1, 6), (1, 7)], "bishop": [(0, 2), (0, 5)], "rook": [(0, 0), (0, 7)], \
-"queen": [(0, 4)], "king": [(0, 3)], "knight": [(0, 1), (0, 6)]}
-    data.playerOne = player.player(data.player1turn, p1Pieces, [], [], "p1")
-    data.playerTwo = player.player(data.player2turn, p2Pieces, [], [], "p2")
+    data.animatefirst = True
+    for key in data.custompieces:
+        newkey = data.custompieces[key][4]
+        player = data.custompieces[key][5]
+        row, col = data.custompieces[key][2], data.custompieces[key][3]
+        if player == "p1":
+            if newkey in data.p1Pieces:
+                data.p1Pieces[newkey].append((row, col))
+            else:
+                data.p1Pieces[newkey] = [(row, col)]
+        elif player == "p2":
+            if newkey in data.p2Pieces:
+                data.p2Pieces[newkey].append((row, col))
+            else:
+                data.p2Pieces[newkey] = [(row, col)]
+    data.board = [([None] * data.cols) for row in range(data.rows)]
+    data.playerOne.pPieces = data.p1Pieces
+    data.playerTwo.pPieces = data.p2Pieces
+    s.changePieces()
     s.initializePieces(data.playerOne)
     s.initializePieces(data.playerTwo)
     s.getKings()
-    data.rows = 8
-    data.cols = 8
+    data.startScreen = False
+    data.custom = False
+    data.makeCustomScreen = False
+    height = data.height - data.margin*2
+    width = data.width - data.margin*2
+    data.cellWidth = width/data.cols
+    data.cellHeight = height/data.rows
 
 def getPieceCell(x, y):
     colNum = None
     RNum = None
     for col in range(6): # determine cell coordinates of click
-        colStartX = 300 + 0 + 50 * col
-        colEndX = colStartX + 50
+        colStartX = 300 + 0 + 60 * col
+        colEndX = colStartX + 60
         if colStartX <= x <= colEndX: colNum = col; break
     for row in range(2):
-        rowStartX = 575 + 0 + 50 * row
-        rowEndX = rowStartX + 50
+        rowStartX = 575 + 0 + 60 * row
+        rowEndX = rowStartX + 60
         if rowStartX <= y <= rowEndX: RNum = row; break
     return (RNum, colNum)
 
@@ -110,30 +128,53 @@ def getcustomXY(row, col): # get x, y coordinates from row col
     y = y0 + (data.customcellHeight/2)
     return x, y
 
+def checkCustomPiecePress(newrow, newcol):
+    for piece in data.custompieces:
+        stuff = data.custompieces[piece]
+        if newrow == stuff[2] and newcol == stuff[3]:
+            data.piecedraw.append([piece, [stuff[4], stuff[5]]])
+            data.currentdrawingpiece = data.piecedraw[0][0]
+            data.customclick1 = True
+            del data.custompieces[piece]
+            data.usedplaces.remove((newrow, newcol))
+            return True
+
+
 def customPress():
     x, y = pygame.mouse.get_pos()
+    check = False
+    if data.makeCustomScreen and not data.customclick1 and (data.custommargin < x < data.custommargin + data.customcellWidth*data.cols) and (data.custommargin < y < data.custommargin + data.customcellHeight*data.rows):
+        newrow, newcol = getCustomCell(x, y)
+        check = checkCustomPiecePress(newrow, newcol)
     if data.custom and 600 < x < 675 and 30 < y < 60:
         initial()
     if data.custom and 600 < x < 675 and 90 < y < 120:
         initial()
         data.cpu = True
     row, col = getPieceCell(x, y)
-    if row != None and col != None and data.customclick1 == False:
+    if row != None and col != None and data.customclick1 == False and not data.customAnim and not check:
         if data.rows + data.cols > 24:
             if row == 0: files = data.row0Size
             else: files = data.row1Size
             image = files[col]
             data.piecedraw.append([image.copy(), data.piecenames[row][col]])
+            data.currentdrawingpiece = data.piecedraw[0][0]
+            data.drawpiecex = x
+            data.drawpiecey = y
         else:
             if row == 0: files = data.row0
             else: files = data.row1
             image = files[col]
             data.piecedraw.append([image.copy(), data.piecenames[row][col]])
+            data.currentdrawingpiece = data.piecedraw[0][0]
+            data.drawpiecex = x
+            data.drawpiecey = y
         data.customclick1 = True
-    elif data.customclick1 and not (200 < x < 500) and y < 500:
+    #elif data.customclick1 and not (200 < x < 500) and y < 500:
+    if data.customclick1 and (565 < x < 700) and (135 < y < 560):
         data.piecedraw = data.piecedraw[-1:]
         data.customclick1 = False
-    if data.customclick1:
+    if data.customclick1 and not check:
         newrow, newcol = getCustomCell(x, y)
         if newrow != None and newcol != None and ((newrow, newcol) not in data.usedplaces):
             x, y = getcustomXY(newrow, newcol)
@@ -143,7 +184,7 @@ def customPress():
             data.customclick1 = False
             data.piecedraw = []
         elif ((newrow, newcol) in data.usedplaces):
-            data.piecedraw = data.piecedraw[-1:]
+            data.piecedraw = data.piecedraw[:-1]
             data.customclick1 = False
     if not data.customAnim and data.xOne - ((data.yTwo - data.yOne)/2) < x < data.xTwo + ((data.yTwo - data.yOne)/2) and data.yOne < y < data.yTwo:
         reset.resetAll()
@@ -156,13 +197,18 @@ def customPress():
     if data.makeCustomScreen:
         if 101 < x < 175 and 30 < y < 60:
             data.text1 = True
+            data.text1Num = ""
             data.text2 = False
         elif 275 < x < 350 and 30 < y < 60:
             data.text1 = False
             data.text2 = True
+            data.text2Num = ""
         elif data.text1 or data.text2:
             data.text1 = False
             data.text2 = False
+            data.text1Num = str(data.rows)
+            data.text2Num = str(data.cols)
+            data.custompieces = {}
 
 def nextEvent(event):
     if not data.cpu:
@@ -179,7 +225,7 @@ def nextEvent(event):
         if data.player2turn:
             mousePressPlay(event)
             if data.moved:
-                print(2222222222222)
+                #print("change turn")
                 data.player1turn = True
                 data.player2turn = False
                 data.moved = False    
@@ -250,6 +296,7 @@ def eventCustom(x, y):
             data.rows = 8
             data.cols = 8
         elif 200 < x < 500 and 400 < y < 450:
+            #print("no2")
             data.player2turn = True
             data.player1turn = False
             data.startScreen = False
@@ -272,7 +319,6 @@ def eventCustom(x, y):
         elif 200 < x < 500 and 500 < y < 550 and not data.custom:
             data.help = True
         elif 200 < x < 500 and 600 < y < 650 and not data.help:
-            print("custom")
             data.custom = True
             data.makeCustomScreen = True
             data.customAnim = True
@@ -282,6 +328,7 @@ def eventCustom(x, y):
             data.startField = False
 
 def mousePressPlay(event):# look for mouse press in play
+    #print("mousePressPlay", data.click1)
     if not (data.p1promote or data.p2promote):
         if gl.checkKing(data.board): data.check = True
         if data.click1 == False:
@@ -293,12 +340,12 @@ def mousePressPlay(event):# look for mouse press in play
                 else:
                     gl.drawOld()
         elif (data.margin <= event.pos[0] <= (data.width - data.margin)) and (data.margin <= event.pos[1] <= (data.height - data.margin)) and data.click1 == True:
+            #print("second call")
             secondClick(event)
         else:
             gl.goBack()
 
 def secondClick(event): # manage second click
-    print(1111111111111)
     if data.check == True:
         secondClickCheck(event)
     else:  

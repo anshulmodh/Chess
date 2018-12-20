@@ -13,6 +13,7 @@ def run():
     data.dark.fill((0, 0, 0, data.darken_percent*255))
     initPics()
     while True:
+        #print(data.player1turn, data.player2turn)
         if data.reset:
             data.reset = False
             reset.resetAll()
@@ -28,7 +29,21 @@ def run():
             pauseAnim()
         if data.pauseAnim:
             pauseAnimVals()
-        if data.custom or data.customAnim:
+        if data.custom or data.customAnim or data.makeCustomScreen:
+            if len(data.text1Num) > 0:
+                if 3 <= int(data.text1Num) <= 20:
+                    data.rows = int(data.text1Num)
+                else:
+                    if not data.text1:
+                        data.text1Num = "8"
+                        data.cols = 8
+            if len(data.text2Num) > 0:
+                if 3 <= int(data.text2Num) <= 20:
+                    data.cols = int(data.text2Num)
+                else:
+                    if not data.text2:
+                        data.text2Num = "8"
+                        data.cols = 8
             g.drawCustomScreen(screen)
             data.startScreen = False
             if (data.customSize < 700):
@@ -57,7 +72,7 @@ def run():
             #         data.makeCustomScreen = True
         if not data.pause and not data.pauseAnim:
             data.Pfont1Size = data.margin1 = data.pauserect1 = data.pauserect2 = data.pauseW = data.pauseH = data.Pfont = data.alpha = data.pauserect3 = data.pauserect4 = data.pauseW1 = data.pauseH1 = 0
-        if not data.startScreen and not data.pause and not data.makeCustomScreen:
+        if not data.startScreen and not data.pause and not data.makeCustomScreen and not data.gameover:
             if (data.startScreen):
                 g.setScreen(screen)
             s.getKings()
@@ -67,6 +82,7 @@ def run():
             if data.player1turn and data.cpu:
                 g.drawPieces(screen)
                 cpu.cpu(data.board)
+                #print("change turnMain")
                 data.player2turn = True
                 data.player1turn = False
             if gameLogic.checkKing(data.board):
@@ -75,7 +91,7 @@ def run():
                 g.check(screen, "CHECK", 175, 650)
             event.mouseMotion()
             gameLogic.checkGameOver()
-        if not data.startScreen:
+        if not data.startScreen and not data.gameover:
             if data.player1turn:
                 pieces2 = data.playerOne.dead
             else:
@@ -88,37 +104,37 @@ def run():
         pygame.display.flip()
         event.onEvent(screen)
 
-def initialize():
-    for key in data.custompieces:
-        newkey = data.custompieces[key][4]
-        player = data.custompieces[key][5]
-        row, col = data.custompieces[key][2], data.custompieces[key][3]
-        p1Pieces = []
-        p2Pieces = []
-        if player == "p1":
-            if newkey in p1Pieces:
-                p1Pieces[newkey].append((row, col))
-            else:
-                p1Pieces[newkey] = [(row, col)]
-        elif player == "p2":
-            if newkey in data.p2Pieces:
-                p2Pieces[newkey].append((row, col))
-            else:
-                p2Pieces[newkey] = [(row, col)]
-    data.board = [([None] * data.cols) for row in range(data.rows)]
-    changePieces()
-    data.playerOne = player.player(data.player1turn, p1Pieces, [], [], "p1")
-    data.playerTwo = player.player(data.player2turn, p2Pieces, [], [], "p2")
-    initializePieces(data.playerOne)
-    initializePieces(data.playerTwo)
-    s.getKings()
-    data.startScreen = False
-    data.custom = False
-    data.makeCustomScreen = False
-    height = data.height - data.margin*2
-    width = data.width - data.margin*2
-    data.cellWidth = width/data.cols
-    data.cellHeight = height/data.rows
+# def initialize():
+#     for key in data.custompieces:
+#         newkey = data.custompieces[key][4]
+#         player = data.custompieces[key][5]
+#         row, col = data.custompieces[key][2], data.custompieces[key][3]
+#         p1Pieces = []
+#         p2Pieces = []
+#         if player == "p1":
+#             if newkey in p1Pieces:
+#                 p1Pieces[newkey].append((row, col))
+#             else:
+#                 p1Pieces[newkey] = [(row, col)]
+#         elif player == "p2":
+#             if newkey in data.p2Pieces:
+#                 p2Pieces[newkey].append((row, col))
+#             else:
+#                 p2Pieces[newkey] = [(row, col)]
+#     data.board = [([None] * data.cols) for row in range(data.rows)]
+#     changePieces()
+#     data.playerOne = player.player(data.player1turn, p1Pieces, [], [], "p1")
+#     data.playerTwo = player.player(data.player2turn, p2Pieces, [], [], "p2")
+#     initializePieces(data.playerOne)
+#     initializePieces(data.playerTwo)
+#     s.getKings()
+#     data.startScreen = False
+#     data.custom = False
+#     data.makeCustomScreen = False
+#     height = data.height - data.margin*2
+#     width = data.width - data.margin*2
+#     data.cellWidth = width/data.cols
+#     data.cellHeight = height/data.rows
 
 def pauseAnim():
     if data.pauserect1 < 150:
@@ -195,19 +211,21 @@ def initPics():
     data.WkingSize = pygame.transform.scale(data.Wking, (30, 30))
     data.BqueenSize = pygame.transform.scale(data.Bqueen, (30, 30))
     data.WqueenSize = pygame.transform.scale(data.Wqueen, (30, 30))
-    data.WpawnSSize = pygame.transform.scale(data.Wpawn, (15, 15))
-    data.BpawnSSize =  pygame.transform.scale(data.Bpawn, (15, 15))
-    data.WbishopSSize = pygame.transform.scale(data.Wbishop, (15, 15))
-    data.BbishopSSize = pygame.transform.scale(data.Bbishop, (15, 15))
+    data.WpawnSSize = pygame.transform.scale(data.Wpawn, (14, 14))
+    data.BpawnSSize =  pygame.transform.scale(data.Bpawn, (14, 14))
+    data.WbishopSSize = pygame.transform.scale(data.Wbishop, (14, 14))
+    data.BbishopSSize = pygame.transform.scale(data.Bbishop, (14, 14))
     data.startField = False
-    data.BknightSSize = pygame.transform.scale(data.Bknight, (15, 15))
-    data.WknightSSize = pygame.transform.scale(data.Wknight, (15, 15))
-    data.BrookSSize = pygame.transform.scale(data.Brook, (15, 15))
-    data.WrookSSize = pygame.transform.scale(data.Wrook, (15, 15))
-    data.BkingSSize = pygame.transform.scale(data.Bking, (15, 15))
-    data.WkingSSize = pygame.transform.scale(data.Wking, (15, 15))
-    data.BqueenSSize = pygame.transform.scale(data.Bqueen, (15, 15))
-    data.WqueenSSize = pygame.transform.scale(data.Wqueen, (15, 15))
+    data.BknightSSize = pygame.transform.scale(data.Bknight, (14, 14))
+    data.WknightSSize = pygame.transform.scale(data.Wknight, (14, 14))
+    data.BrookSSize = pygame.transform.scale(data.Brook, (14, 14))
+    data.WrookSSize = pygame.transform.scale(data.Wrook, (14, 14))
+    data.BkingSSize = pygame.transform.scale(data.Bking, (14, 14))
+    data.WkingSSize = pygame.transform.scale(data.Wking, (14, 14))
+    data.BqueenSSize = pygame.transform.scale(data.Bqueen, (14, 14))
+    data.WqueenSSize = pygame.transform.scale(data.Wqueen, (14, 14))
+    data.row0Orig = [data.Wpawn, data.Wrook, data.Wbishop, data.Wknight, data.Wking, data.Wqueen]
+    data.row1Orig = [data.Bpawn, data.Brook, data.Bbishop, data.Bknight, data.Bking, data.Bqueen]
     data.row0 = [data.WpawnSize, data.WrookSize, data.WbishopSize, data.WknightSize, data.WkingSize, data.WqueenSize]
     data.row1 = [data.BpawnSize, data.BrookSize, data.BbishopSize, data.BknightSize, data.BkingSize, data.BqueenSize]
     data.row0Size = [data.WpawnSSize, data.WrookSSize, data.WbishopSSize, data.WknightSSize, data.WkingSSize, data.WqueenSSize]

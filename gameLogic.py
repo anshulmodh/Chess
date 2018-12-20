@@ -79,11 +79,10 @@ def drawNew(newrow, newcol, x, y): # draw new piece in current state
                     if checkKing(data.board):
                         drawNewFromCheck(piece, oldRow, oldCol, newrow, newcol)
                     else:
-                        print(3333333333333)
                         data.click1 = False
+                        #print("change turnGL")
                         data.player2turn, data.player1turn = not data.player2turn, not data.player1turn
                         data.moved = True
-                    print(44444444444444)
                     piece.move(x, y, newrow, newcol)
                     data.board[newrow][newcol] = piece
                     data.board[data.drow][data.dcol] = None
@@ -152,6 +151,7 @@ def changeAfterCastle(newrow, newcol): # update pieces when castling
     piece.move(x, y, data.drow, newCol)
     Nx, Ny = s.getXY((data.drow, othernewcol))
     otherPiece.move(Nx, Ny, data.drow, othernewcol)
+    #print("change turnGLCastle")
     data.player2turn, data.player1turn = not data.player2turn, not data.player1turn
     data.click1 = False
 
