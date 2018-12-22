@@ -113,7 +113,7 @@ def drawStart(screen): # draw start screen
     textRect = text.get_rect(center = (data.b4 + 100, 625))
     screen.blit(text, textRect)
     font = pygame.font.SysFont("impact", 50)
-    text = font.render("Welcome to Chess", True, tan)
+    text = font.render("Chess Made to Order", True, tan)
     textRect = text.get_rect(center = (350, data.titleY))
     screen.blit(text, textRect)
 
