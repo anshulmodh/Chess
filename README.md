@@ -1,4 +1,4 @@
-# Chess Application
+# Chess Made to Order
 
 Disclaimer -> This progam was initially created as my final term project for 15-112 Fundamentals of Computer Science at Carnegie Mellon University during the Summer of 2017. This program is a work in progress and is constantly being updated.
 
@@ -21,12 +21,14 @@ $ pip install pygame
 5. Move Validation
 6. Check Validation
 7. Checkmate Validation
+8. Custom Game Mode - Allows you to change the size of the board as well as the type of and number of pieces in play
 
 # AI Features
 1. MiniMax Algorithm
 2. Alpha-Beta Pruning
-3. Heuristic Evaluation(In-Development)
+3. Heuristic Evaluation (In-Development)
 4. 3 difficulty levels -> Easy - predicts up to 3 moves ahead, Medium - 7 moves, Hard - 15 moves
+5. Works in the custom game mode
 
 # How to Run
 Clone the source locally:
@@ -40,37 +42,37 @@ Run the Main.py file:
 # Pictures!
 Start Screen:
 <h1 align="center">
-  <br>
+  <br/>
   <img src="https://github.com/anshulmodh/Chess/blob/master/Pictures/examples/startScreen.png" width="700">
 </h1>
 
 Game Screen:
 <h1 align="center">
-  <br>
+  <br/>
   <img src="https://github.com/anshulmodh/Chess/blob/master/Pictures/examples/gameScreen.png" width="700">
 </h1>
 
 Pause Screen:
 <h1 align="center">
-  <br>
+  <br/>
   <img src="https://github.com/anshulmodh/Chess/blob/master/Pictures/examples/pauseScreen.png" width="700">
 </h1>
 
 Help Menu:
 <h1 align="center">
-  <br>
+  <br/>
   <img src="https://github.com/anshulmodh/Chess/blob/master/Pictures/examples/helpMenu.png" width="700">
 </h1>
 
 Custom Game Menu:
 <h1 align="center">
-  <br>
+  <br/>
   <img src="https://github.com/anshulmodh/Chess/blob/master/Pictures/examples/customMenu.png" width="700">
 </h1>
 
 Custom Gameplay:
 <h1 align="center">
-  <br>
+  <br/>
   <img src="https://github.com/anshulmodh/Chess/blob/master/Pictures/examples/customGameplay.png" width="700">
 </h1>
 
