@@ -77,6 +77,4 @@ Custom Gameplay:
 </h1>
 
 # Known Bugs:
-1. Check Validation broken after pygame graphics release
-2. Piece Resizing broken on large 'n' custom game modes after pygame graphics release
-3. Messy Code!
+1. Piece Resizing broken on large 'n' custom game modes after pygame graphics release
