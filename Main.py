@@ -7,136 +7,102 @@ import support as s
 import reset
 import cpu as cpu
 
-def run():  #Needs to be cleaned up
+def run(): 
     screen = data.screen
-    data.dark = pygame.Surface(data.backWood.get_size()).convert_alpha()
+    data.dark = pygame.Surface(data.backWood.get_size()).convert_alpha() # Background and initialize vars
     data.dark.fill((0, 0, 0, data.darken_percent*255))
     initPics()
-    while True:
-        #print(data.player1turn, data.player2turn)
-        if data.reset:
+    while True: # Game Loop
+        if data.reset: # Reset game vars
             data.reset = False
             reset.resetAll()
             # data.pause = False
             continue
-        if data.startX0 > 0 and data.animatefirst:
+        if data.startX0 > 0 and data.animatefirst: # Animate Loading Screen
             data.startX0 -= 25
         else:
             data.animatefirst = False
-        if data.startScreen:
+        if data.startScreen: # Display Starting Screen
             g.startingScreen(screen)
-        if data.pause:
+        if data.pause: # Animate the pausing sequence
             pauseAnim()
-        if data.pauseAnim:
+        if data.pauseAnim: # Update the pause animation vars
             pauseAnimVals()
-        if data.custom or data.customAnim or data.makeCustomScreen:
-            if len(data.text1Num) > 0:
-                if 3 <= int(data.text1Num) <= 20:
-                    data.rows = int(data.text1Num)
-                else:
-                    if not data.text1:
-                        data.text1Num = "8"
-                        data.cols = 8
-            if len(data.text2Num) > 0:
-                if 3 <= int(data.text2Num) <= 20:
-                    data.cols = int(data.text2Num)
-                else:
-                    if not data.text2:
-                        data.text2Num = "8"
-                        data.cols = 8
-            g.drawCustomScreen(screen)
-            data.startScreen = False
-            if (data.customSize < 700):
-                    data.customSize += 10
-                    data.x0 -= 5
-                    data.y0 -= 5
-            if data.customFontSize < 30:
-                data.customFontSize +=1
-            if not (0 >= data.x1 and data.x2 >= data.width and data.y1 <= 0 and data.y2 >= data.height):
-                data.x1 -= 5
-                data.x2 += 5
-                data.y1 -= 5
-                data.y2 += 5
-            else:
-                data.customAnim = False
-            # if data.custom and not data.customAnim:
-            #     if not (0 >= data.x0 and data.x1 >= data.width and data.y0 <= 0 and data.y1 >= data.height):
-            #         data.x0 -= 15
-            #         data.x1 += 15
-            #         data.y0 -= 15
-            #         data.y1 += 15
-            #         if data.fontNum < 30:
-            #             data.fontNum += 1
-            #         data.font = "Helvetica " + str(data.fontNum)
-            #     else:
-            #         data.makeCustomScreen = True
-        if not data.pause and not data.pauseAnim:
-            data.Pfont1Size = data.margin1 = data.pauserect1 = data.pauserect2 = data.pauseW = data.pauseH = data.Pfont = data.alpha = data.pauserect3 = data.pauserect4 = data.pauseW1 = data.pauseH1 = 0
+        if data.custom or data.customAnim or data.makeCustomScreen: # Display the custom game screen
+            customScreen(screen)
+        if not data.pause and not data.pauseAnim: # Update unused animation vars
+            data.Pfont1Size = data.margin1 = data.pauserect1 = data.pauserect2 = data.pauseW = data.pauseH = 0
+            data.Pfont = data.alpha = data.pauserect3 = data.pauserect4 = data.pauseW1 = data.pauseH1 = 0
         if not data.startScreen and not data.pause and not data.makeCustomScreen and not data.gameover:
-            if (data.startScreen):
-                g.setScreen(screen)
-            s.getKings()
-            data.playerOne.setPlayer = data.player1turn
-            data.playerTwo.setPlayer = data.player2turn
-            s.incTimers()
-            if data.player1turn and data.cpu:
-                g.drawPieces(screen)
-                cpu.cpu(data.board)
-                #print("change turnMain")
-                data.player2turn = True
-                data.player1turn = False
-            if gameLogic.checkKing(data.board):
-                data.check = True
-            if data.check:
-                g.check(screen, "CHECK", 175, 650)
-            event.mouseMotion()
-            gameLogic.checkGameOver()
-        if not data.startScreen and not data.gameover:
-            if data.player1turn:
-                pieces2 = data.playerOne.dead
-            else:
-                pieces2 = data.playerTwo.dead
-            if gameLogic.checkP(pieces2):
-                gameLogic.checkPromotion()
-            if not data.makeCustomScreen:
-                g.redrawAll(screen)
+            gameCheckFuncs(screen)    # check game validity
+        if not data.startScreen and not data.gameover: 
+            refreshValues(screen)
         data.fps.tick(100)
         pygame.display.flip()
         event.onEvent(screen)
 
-# def initialize():
-#     for key in data.custompieces:
-#         newkey = data.custompieces[key][4]
-#         player = data.custompieces[key][5]
-#         row, col = data.custompieces[key][2], data.custompieces[key][3]
-#         p1Pieces = []
-#         p2Pieces = []
-#         if player == "p1":
-#             if newkey in p1Pieces:
-#                 p1Pieces[newkey].append((row, col))
-#             else:
-#                 p1Pieces[newkey] = [(row, col)]
-#         elif player == "p2":
-#             if newkey in data.p2Pieces:
-#                 p2Pieces[newkey].append((row, col))
-#             else:
-#                 p2Pieces[newkey] = [(row, col)]
-#     data.board = [([None] * data.cols) for row in range(data.rows)]
-#     changePieces()
-#     data.playerOne = player.player(data.player1turn, p1Pieces, [], [], "p1")
-#     data.playerTwo = player.player(data.player2turn, p2Pieces, [], [], "p2")
-#     initializePieces(data.playerOne)
-#     initializePieces(data.playerTwo)
-#     s.getKings()
-#     data.startScreen = False
-#     data.custom = False
-#     data.makeCustomScreen = False
-#     height = data.height - data.margin*2
-#     width = data.width - data.margin*2
-#     data.cellWidth = width/data.cols
-#     data.cellHeight = height/data.rows
+def refreshValues(screen): # Update player data during the game
+    if data.player1turn: 
+        pieces2 = data.playerOne.dead
+    else:
+        pieces2 = data.playerTwo.dead
+    if gameLogic.checkP(pieces2):
+        gameLogic.checkPromotion()
+    if not data.makeCustomScreen:
+        g.redrawAll(screen)
 
-def pauseAnim():
+def gameCheckFuncs(screen):
+    if (data.startScreen):
+        g.setScreen(screen)
+    s.getKings()
+    data.playerOne.setPlayer = data.player1turn # Increment player turns
+    data.playerTwo.setPlayer = data.player2turn
+    s.incTimers()
+    if data.player1turn and data.cpu: 
+        g.drawPieces(screen) # Move the CPU pieces if AI is playing
+        cpu.cpu(data.board)
+        #print("change turnMain")
+        data.player2turn = True
+        data.player1turn = False
+    if gameLogic.checkKing(data.board): # Check is any of the two kings are in check
+        data.check = True
+    if data.check:
+        g.check(screen, "CHECK", 175, 650) # Display the check message
+    event.mouseMotion()
+    gameLogic.checkGameOver()
+
+def customScreen(screen):
+    if len(data.text1Num) > 0: # Assign row col values from text box input
+        if 3 <= int(data.text1Num) <= 20:
+            data.rows = int(data.text1Num)
+        else:
+            if not data.text1:
+                data.text1Num = "8"
+                data.cols = 8
+    if len(data.text2Num) > 0:
+        if 3 <= int(data.text2Num) <= 20:
+            data.cols = int(data.text2Num)
+        else:
+            if not data.text2:
+                data.text2Num = "8"
+                data.cols = 8
+    g.drawCustomScreen(screen)
+    data.startScreen = False # animate the custom screen
+    if (data.customSize < 700):
+            data.customSize += 10
+            data.x0 -= 5
+            data.y0 -= 5
+    if data.customFontSize < 30:
+        data.customFontSize +=1
+    if not (0 >= data.x1 and data.x2 >= data.width and data.y1 <= 0 and data.y2 >= data.height):
+        data.x1 -= 5
+        data.x2 += 5
+        data.y1 -= 5
+        data.y2 += 5
+    else:
+        data.customAnim = False
+
+def pauseAnim(): # Animation vars for the pause screen
     if data.pauserect1 < 150:
         data.pauserect1 += 10
     if data.pauserect2 < 200:
@@ -168,7 +134,7 @@ def pauseAnim():
     if data.textY < 310:
         data.textY += 30
 
-def pauseAnimVals():
+def pauseAnimVals(): # Animation vars for retracting the pause screen
     data.pauserect1 -= 10
     data.pauserect2 -= 15
     data.pauseW -= 40
@@ -198,7 +164,7 @@ def pauseAnimVals():
     if data.textY > 0:
         data.textY -= 30
 
-def initPics():
+def initPics(): # initialize pics from the Pictures/ dir
     data.WpawnSize = pygame.transform.scale(data.Wpawn, (30, 30))
     data.BpawnSize =  pygame.transform.scale(data.Bpawn, (30, 30))
     data.WbishopSize = pygame.transform.scale(data.Wbishop, (30, 30))
@@ -232,56 +198,3 @@ def initPics():
     data.row1Size = [data.BpawnSSize, data.BrookSSize, data.BbishopSSize, data.BknightSSize, data.BkingSSize, data.BqueenSSize]
 
 run()
-
-# def rightPressed(event, data):
-#     x, y = event.pos[0], event.pos[1]
-#     if 150 < x < 250 and 30 < y < 60:
-#         data.timer1 = False
-#         data.time1 = 0
-#         data.start1 = None
-#     elif 450 < x < 550 and 30 < y < 60:
-#         data.timer2 = False
-#         data.time2 = 0
-#         data.start2 = None
-
-# pygame.draw.ellipse(screen, brown, [data.help1 + 300 - r, data.help2 + 625, r*2, r*2])
-# pygame.draw.ellipse(screen, brown, [data.help1 + 400 - r, data.help2 + 625, r*2, r*2])
-# pygame.draw.rect(screen, brown, [data.help1 + 300, data.help2 + 625, 100, 26])
-
-    # pygame.draw.rect(screen, white, [data.startX0 + 150, 30, 100, 30])
-    # screen.blit(text, textRect)
-    # pygame.draw.rect(screen, white, [data.startX0 + 450, 30, 100, 30])
-
-# def checkTimers(data, event):
-#     x, y = event.pos[0], event.pos[1]
-#     if data.startX0 + 150 < x < 250 and 30 < y < 60:
-#         if data.start1 == None:
-#             data.start1 = time.time()
-#         data.timer1 = not data.timer1
-#     elif data.startX0 + 450 < x < 550 and 30 < y < 60:
-#         if data.start2 == None:
-#              data.start2 = time.time()
-#         data.timer2 = not data.timer2
-
-# def secondClickCheck(data, event): # check for second click
-#     newrow, newcol = getCell(data, event.pos[0], event.pos[1]) 
-#     x, y = getXY(data, (newrow, newcol))
-#     if data.board[data.drow][data.dcol] == data.p1King or data.board[data.drow][data.dcol] == data.p2King:  
-#         drawNew(data, newrow, newcol, x, y)
-#         if checkKing(data, data.board, (newrow, newcol)):
-#             goBack(data) # if check, undo
-#             piece = data.board[newrow][newcol]
-#             if piece != None:
-#                 piece.setMoved()
-#         else:
-#             drawNew(data, newrow, newcol, x, y)
-#             data.check = False
-#     else:
-#         if checkKing(data, data.board):
-#             drawNew(data, newrow, newcol, x, y)
-#             piece = data.board[newrow][newcol]
-#             if piece != None:
-#                 piece.setMoved()
-#         else:
-#             drawNew(data, newrow, newcol, x, y)
-#             data.check = False
