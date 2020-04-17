@@ -75,6 +75,3 @@ Custom Gameplay:
   <br/>
   <img src="https://github.com/anshulmodh/Chess/blob/master/Pictures/examples/customGameplay.png" width="700">
 </h1>
-
-# Known Bugs:
-1. Piece Resizing broken on large 'n' custom game modes after pygame graphics release
